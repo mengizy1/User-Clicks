@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            width: 90vw; /* Set width based on viewport width */
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .product {
+            background-color: #fff;
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            box-sizing: border-box;
+        }
+        .product img {
+            flex: 0 0 30%; /* Image width 30% of container */
+            max-width: 300px; /* Set a max-width for the image */
+            height: auto;
+            display: block;
+            margin-right: 20px;
+        }
+        .product video {
+            width: 100%;
+            height: auto;
+            display: block;
+            margin-bottom: 20px;
+        }
+        .product-content {
+            flex: 1; /* Content takes up remaining space */
+            max-width: 70%; /* Max width for the content */
+        }
+        .product p {
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .product {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .product img {
+                width: 100%;
+                max-width: none; /* Remove max-width on smaller screens */
+                margin: 0 0 10px 0;
+            }
+
+            .product-content {
+                width: 100%;
+                max-width: none; /* Remove max-width on smaller screens */
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 100%;
+                padding: 10px;
+            }
+
+            .product {
+                padding: 10px;
+            }
+
+            .product p {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Our Products</h1>
+        <div class="product" data-product-id="1">
+            <img src="product1.jpg" alt="Product 1">
+            <div class="product-content">
+                <p>Buffalo Games - Aimee Stewart - Merry Mushroom Village Picnic - 1000 Piece Jigsaw Puzzle for Adults Challenging Puzzle Perfect for Game Nights - Finished Size 26.75 x 19.75.</p>
+            </div>
+        </div>
+        <div class="product" data-product-id="2">
+            <img src="product2.jpg" alt="Product 2">
+            <div class="product-content">
+                <p>Melissa & Doug Solar System Floor Puzzle (48 pcs, 2 x 3 Feet) - FSC Certified.</p>
+            </div>
+        </div>
+        <div class="product" data-product-id="3">
+            <video src="product3.mp4" autoplay muted loop></video>
+            <img src="product3.jpg" alt="Product 3">
+            <div class="product-content">
+                <p>7 Continents & 5 Oceans of The Earth Wooden Jigsaw Puzzle for Kids | 21 Puzzle Pieces | Learning & Educational Toy Gift for Boys & Girls Ages 3 Years and Above.</p>
+            </div>
+        </div>
+        <div class="product" data-product-id="4">
+            <img src="product4.jpg" alt="Product 4">
+            <div class="product-content">
+                <p>National Parks Puzzle for Adults 1000 Pieces, Travel Poster Landscape Puzzle Including Zion Yellowstone Yosemite, Nature Jigsaw Puzzles Scenery Mountain Scene.</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Capture the Prolific ID from the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const prolificId = urlParams.get('PROLIFIC_PID');
+            console.log('Prolific ID:', prolificId); // Debugging line
+
+            // Google Apps Script Web App URL
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbzQJ0Zg1eGM_1guJDdWJ5mZ07tNwNzkQbDMJC9ogUzH1C3rcH-XJmrTiShP9Ix6N8J0/exec';
+
+            document.querySelectorAll('.product').forEach(function(element) {
+                element.addEventListener('click', function(event) {
+                    const productId = event.currentTarget.getAttribute('data-product-id');
+                    console.log('Product ID:', productId); // Debugging line
+
+                    const clickData = {
+                        prolific_id: prolificId,
+                        product_id: productId,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    console.log('Click Data:', clickData); // Debugging line
+
+                    // Debugging log before fetch
+                    console.log('Attempting to send click data to:', scriptURL);
+
+                    // Send click data to Google Sheets
+                    fetch(scriptURL, {
+			redirect: "follow",
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8'
+                        },
+                        body: JSON.stringify(clickData)
+                    })
+                    .then(response => {
+                        // Debugging log after fetch
+                        console.log('Response received:', response);
+
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok ' + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Success:', data); // Debugging line
+
+                        // Redirect to Thank You page
+                        const thankYouUrl = "thankyou.html?PROLIFIC_PID=" + prolificId + "&product_id=" + productId;
+                        window.location.href = thankYouUrl;
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error); // Debugging line
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
