@@ -60,27 +60,33 @@
             if (sessionStorage.getItem('completed')) {
                 console.log("Session storage flag is set.");
 
+                // Replace the current history state
+                window.history.replaceState(null, null, window.location.href);
+                console.log("Initial history state replaced.");
+
                 // Function to push a new state to ensure we have history to manipulate
                 function pushState() {
                     window.history.pushState(null, null, window.location.href);
                     console.log("State pushed.");
                 }
 
-                // Replace the current history state and push a new one
-                window.history.replaceState(null, null, window.location.href);
+                // Push a new state initially
                 pushState();
-                console.log("Initial history state replaced and new state pushed.");
 
                 // Handle the popstate event to prevent back navigation
                 window.onpopstate = function(event) {
                     console.log("Back button pressed. Redirecting back to the current page.");
-                    window.history.pushState(null, null, window.location.href);
+                    pushState();
                 };
-
                 console.log("popstate event handler set.");
 
-                // Ensure the interval continues pushing state
-                setInterval(pushState, 100);
+                // Push a new state every 100 milliseconds
+                const interval = setInterval(pushState, 100);
+
+                // Clear the interval when the user navigates away from the page
+                window.addEventListener('unload', function() {
+                    clearInterval(interval);
+                });
             } else {
                 console.log("No session storage flag found. Redirecting to index.html.");
                 // If no session flag, redirect to index
