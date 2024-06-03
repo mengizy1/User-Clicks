@@ -56,20 +56,35 @@
             // Set the Qualtrics survey link
             document.getElementById('qualtrics-link').href = qualtricsUrl;
 
-            // Referrer check to prevent going back
-            if (document.referrer.includes('index.html')) {
-                // Replace the current history state
-                window.history.replaceState(null, null, window.location.href);
-                // Push a new state to ensure we have history to manipulate
-                window.history.pushState(null, null, window.location.href);
-                
-                setInterval(() => {
-                    window.history.pushState(null, null, window.location.href);
-                }, 100);
+            // Check session storage to prevent going back
+            if (sessionStorage.getItem('completed')) {
+                console.log("Session storage flag is set.");
 
-                window.onpopstate = function() {
-                    window.history.go(1);
+                // Function to push a new state to ensure we have history to manipulate
+                function pushState() {
+                    window.history.pushState(null, null, window.location.href);
+                    console.log("State pushed.");
+                }
+
+                // Replace the current history state and push a new one
+                window.history.replaceState(null, null, window.location.href);
+                pushState();
+                console.log("Initial history state replaced and new state pushed.");
+
+                // Handle the popstate event to prevent back navigation
+                window.onpopstate = function(event) {
+                    console.log("Back button pressed. Redirecting back to the current page.");
+                    window.history.pushState(null, null, window.location.href);
                 };
+
+                console.log("popstate event handler set.");
+
+                // Ensure the interval continues pushing state
+                setInterval(pushState, 100);
+            } else {
+                console.log("No session storage flag found. Redirecting to index.html.");
+                // If no session flag, redirect to index
+                window.location.href = 'index.html';
             }
         });
     </script>
