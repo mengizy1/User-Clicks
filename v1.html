@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            width: 90vw; /* Set width based on viewport width */
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .product {
+            background-color: #fff;
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            box-sizing: border-box;
+            min-height: 200px; /* Set a minimum height for consistency */
+        }
+        .img-container {
+            flex: 0 0 30%; /* Image container width 30% of container */
+            max-width: 300px; /* Set a max-width for the container */
+            height: auto;
+            display: block;
+            margin-right: 20px;
+            background-color: #F1F0F0; /* Set background color */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .product img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .product video {
+            flex: 0 0 50%; /* Video takes 50% width */
+            width: 50%; /* Set width for the video */
+            min-width: 300px; /* Minimum width for video */
+            height: auto;
+            display: block;
+            margin-right: 20px;
+        }
+        .product-content {
+            flex: 1; /* Content takes up remaining space */
+            max-width: 70%; /* Max width for the content */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center vertically */
+        }
+        .product-content p {
+            margin: 10px 0;
+            text-align: left; /* Left-align text */
+        }
+        .sponsored-tag {
+            color: #787676; /* Font color */
+            padding: 5px 10px;
+            display: inline-block;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            text-align: left; /* Left-align the tag */
+        }
+
+        @media (max-width: 768px) {
+            .product {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .img-container, .product video {
+                width: 100%;
+                max-width: none; /* Remove max-width on smaller screens */
+                margin: 0 0 10px 0;
+            }
+
+            .product-content {
+                width: 100%;
+                max-width: none; /* Remove max-width on smaller screens */
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 100%;
+                padding: 10px;
+            }
+
+            .product {
+                padding: 10px;
+            }
+
+            .product p {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="product" data-product-id="1">
+            <div class="img-container">
+                <img src="product1.jpg" alt="Product 1">
+            </div>
+            <div class="product-content">
+                <p>potricher 8 x 8 Inch DIY Scrapbook Album 40 Pages Hardcover Kraft Paper Scrap Book Photo Albums Memory Book for Wedding and Anniversary Family (White, 8 Inch)</p>
+            </div>
+        </div>
+        <div class="product" data-product-id="2">
+            <div class="img-container">
+                <img src="product2.jpg" alt="Product 2">
+            </div>
+            <div class="product-content">
+                <p>Vienrose DIY Scrapbook Album 8x8 Inch Hardcover Kraft Paper Scrap Book Photo Albums with 40 Blank Pages for Wedding Baby Shower, Kraft Color</p>
+            </div>
+        </div>
+        <div class="product" data-product-id="3">
+            <div class="img-container">
+                <img src="product3.jpg" alt="Product 3">
+            </div>
+            <div class="product-content">
+                <p>Bstorify Scrapbook Album 40 Pages (8 x 8 Inch) Brown Thick 200gsm Kraft Paper, Photo Album Scrapbook, Memory Book - Ideal for Your Scrapbooking Albums Art & Craft Projects </p>
+            </div>
+        </div>
+        <div class="product" data-product-id="4">
+            <div class="img-container">
+                <img src="product4.jpg" alt="Product 4">
+            </div>
+            <div class="product-content">
+                <p>8X8 Inch DIY Scrapbook Photo Album, Kraft Blank Paper Scrap Book 40 Pages Memory Book for Wedding Family</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Capture the Prolific ID from the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const prolificId = urlParams.get('PROLIFIC_PID');
+            console.log('Prolific ID:', prolificId); // Debugging line
+
+            // Google Apps Script Web App URL
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbw-535bgxSAV_Eyh7jihmoAp6NmfrE4hR76Fj43N3ZygOrdbvz3Pjeyi4AW5zKA4R0x/exec';
+
+	    // Get the name of the HTML file (e.g., v1.html)
+            const pageName = window.location.pathname.split('/').pop();
+            console.log('Page Name:', pageName); // Debugging line
+
+            document.querySelectorAll('.product').forEach(function(element) {
+                element.addEventListener('click', function(event) {
+                    const productId = event.currentTarget.getAttribute('data-product-id');
+                    console.log('Product ID:', productId); // Debugging line
+
+                    const clickData = {
+                        prolific_id: prolificId,
+                        product_id: productId,
+                        timestamp: new Date().toISOString(),
+			page: pageName
+                    };
+
+                    console.log('Click Data:', clickData); // Debugging line
+
+                    // Debugging log before fetch
+                    console.log('Attempting to send click data to:', scriptURL);
+
+                    // Send click data to Google Sheets
+                    fetch(scriptURL, {
+                        redirect: "follow",
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8'
+                        },
+                        body: JSON.stringify(clickData)
+                    })
+                    .then(response => {
+                        // Debugging log after fetch
+                        console.log('Response received:', response);
+
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok ' + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Success:', data); // Debugging line
+                        // Set session storage flag
+                        sessionStorage.setItem('completed', 'true');
+                        // Redirect to Thank You page
+                        const thankYouUrl = "thankyou.html?PROLIFIC_PID=" + prolificId + "&product_id=" + productId;
+                        window.location.href = thankYouUrl;
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error); // Debugging line
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
