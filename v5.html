@@ -205,9 +205,22 @@ Now, please click the scrapbook album that you are most interested in purchasing
                         console.log('Success:', data); // Debugging line
                         // Set session storage flag
                         sessionStorage.setItem('completed', 'true');
-                        // Redirect to Thank You page
-                        const thankYouUrl = "thankyou.html?PROLIFIC_PID=" + prolificId + "&product_id=" + productId;
-                        window.location.href = thankYouUrl;
+           
+			// Use history.pushState to prevent going back
+    			history.pushState(null, null, window.location.href);
+
+    			// Add an event listener to detect back navigation attempts
+    			window.addEventListener('popstate', function(event) {
+        		// Redirect to the Qualtrics URL if back navigation is detected
+        			window.location.href = qualtricsUrl;
+    			});
+
+
+                        // Redirect to qualtrics
+
+                        const qualtricsUrl = "https://utexas.qualtrics.com/jfe/form/SV_2mf373ZqurdDy8S?PROLIFIC_PID=" + prolificId;
+                        window.location.href = qualtricsUrl;
+
                     })
                     .catch((error) => {
                         console.error('Error:', error); // Debugging line
