@@ -116,6 +116,7 @@
 For the purpose of this study, please assume that these four products are identical in terms of price, shipping, the number of reviews, or the average review ratings. 
 
 Now, please click the scrapbook album that you are most interested in purchasing, and then please answer survey questions on the next page regarding your choice.</p>
+	<p><strong>Note:</strong> There may be a <span style="color: red; font-weight: bold;">short delay after you click</span> on a product before you are redirected to the survey. 	<span style="color: red; font-weight: bold;">Please DO NOT click multiple times.</span> Your response is being processed, 	and you will be redirected shortly.</p>
 	<h1>Our Products</h1>
         <div class="product" data-product-id="1">
             <div class="img-container">
@@ -178,11 +179,12 @@ Now, please click the scrapbook album that you are most interested in purchasing
 			page: pageName
                     };
 
-                    console.log('Click Data:', clickData); // Debugging line
-
-                    // Debugging log before fetch
-                    console.log('Attempting to send click data to:', scriptURL);
-
+                    const redirectToQualtrics = () => {
+    			const qualtricsUrl = "https://utexas.qualtrics.com/jfe/form/SV_2mf373ZqurdDy8S?PROLIFIC_PID=" + prolificId;
+   			window.location.href = qualtricsUrl;
+			};
+			
+			
                     // Send click data to Google Sheets
                     fetch(scriptURL, {
                         redirect: "follow",
@@ -193,38 +195,18 @@ Now, please click the scrapbook album that you are most interested in purchasing
                         body: JSON.stringify(clickData)
                     })
                     .then(response => {
-                        // Debugging log after fetch
-                        console.log('Response received:', response);
-
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok ' + response.statusText);
-                        }
                         return response.json();
                     })
                     .then(data => {
                         console.log('Success:', data); // Debugging line
-                        // Set session storage flag
-                        sessionStorage.setItem('completed', 'true');
-           
-			// Use history.pushState to prevent going back
-    			history.pushState(null, null, window.location.href);
-
-    			// Add an event listener to detect back navigation attempts
-    			window.addEventListener('popstate', function(event) {
-        		// Redirect to the Qualtrics URL if back navigation is detected
-        			window.location.href = qualtricsUrl;
-    			});
-
-
-                        // Redirect to qualtrics
-
-                        const qualtricsUrl = "https://utexas.qualtrics.com/jfe/form/SV_2mf373ZqurdDy8S?PROLIFIC_PID=" + prolificId;
-                        window.location.href = qualtricsUrl;
-
+                       
                     })
                     .catch((error) => {
                         console.error('Error:', error); // Debugging line
-                    });
+                    })
+		    .finally(() => {
+    			redirectToQualtrics();
+		});
                 });
             });
         });
